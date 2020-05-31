@@ -79,22 +79,23 @@ export default {
       const { stiffness, damping, mass } = props;
 
       // check if value is already dumped
-      if (!isDumped()) {
-        const springForce = -1 * stiffness * (currentData.value - currentData.desired);
-        const damperForce = -1 * damping * currentData.velocity;
-        const acceleration = (springForce + damperForce) / mass;
-
-        currentData.velocity += acceleration / props.framesPerSecond;
-        currentData.value += currentData.velocity / props.framesPerSecond;
-        cancelAnimation(animationId);
-        animationId = requestAnimation(dumpValue);
-        return;
+      if (isDumped()) {
+        // If dumped start animation in reverse direction
+        if (props.direction === 'pendulum') {
+          switchValueDirection();
+        } else {
+          return;
+        }
       }
 
-      // If dumped start animation in reverse direction
-      if (props.direction === 'pendulum') {
-        switchValueDirection();
-      }
+      const springForce = -1 * stiffness * (currentData.value - currentData.desired);
+      const damperForce = -1 * damping * currentData.velocity;
+      const acceleration = (springForce + damperForce) / mass;
+
+      currentData.velocity += acceleration / props.framesPerSecond;
+      currentData.value += currentData.velocity / props.framesPerSecond;
+      cancelAnimation(animationId);
+      animationId = requestAnimation(dumpValue);
     }
 
     function isDumped() {
