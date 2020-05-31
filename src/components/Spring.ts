@@ -1,4 +1,4 @@
-import { reactive, watch } from 'vue';
+import { reactive, watch, computed } from 'vue';
 
 import { getFarestValue, requestAnimation, cancelAnimation } from '../utils';
 
@@ -8,17 +8,13 @@ export default {
   name: 'Spring',
   props: {
     from: {
-      default() {
-        return {};
-      },
-      type: Object,
+      default: 0,
+      type: Number,
     },
     to: {
-      default() {
-        return {};
-      },
+      default: 0,
       required: true,
-      type: Object,
+      type: Number,
     },
     // spring stiffness, in kg / s^2
     stiffness: {
@@ -58,64 +54,52 @@ export default {
     },
   },
   setup(props: SpringProps, { slots }: any) {
-    const currentValues: any = reactive({});
-    const currentVelocities: any = reactive({});
-    const desiredValues: any = reactive({});
-    const animations: any = reactive({});
-    const output: any = reactive({});
+    const currentData: any = reactive({
+      value: initCurrentValue(),
+      desired: props.end,
+      velocity: props.velocity,
+    });
+    const output: any = computed(() => roundNumber(currentData.value));
 
     // Non reactive values
+    let animationId: number = 0;
     const roundingPrecision = Math.pow(10, props.precision);
     const dumpingPrecision = 1 / roundingPrecision;
-
-    // Set initial values
-    Object.keys(props.to).forEach((key) => {
-      currentValues[key] = getCurrentValue(key, props.direction);
-      desiredValues[key] = getDesiredValue(key, props.direction);
-      currentVelocities[key] = props.velocity;
-      output[key] = roundNumber(currentValues[key]);
-    });
 
     // Start the party
     watch(props, start, { immediate: true });
 
     function start() {
       // update desired value
-      Object.keys(props.to).forEach((key) => {
-        desiredValues[key] = getDesiredValue(key, props.direction);
-      });
-
-      Object.keys(props.to).forEach((key) => {
-        animations[key] = requestAnimation(() => dumpValue(key));
-      });
+      currentData.desired = initDesiredValue();
+      animationId = requestAnimation(dumpValue);
     }
 
-    function dumpValue(key: string) {
+    function dumpValue() {
       const { stiffness, damping, mass } = props;
 
       // check if value is already dumped
-      if (isDumped(key)) {
-        if (props.direction === 'pendulum') {
-          switchValueDirection(key);
-        } else {
-          return;
-        }
+      if (!isDumped()) {
+        const springForce = -1 * stiffness * (currentData.value - currentData.desired);
+        const damperForce = -1 * damping * currentData.velocity;
+        const acceleration = (springForce + damperForce) / mass;
+
+        currentData.velocity += acceleration / props.framesPerSecond;
+        currentData.value += currentData.velocity / props.framesPerSecond;
+        cancelAnimation(animationId);
+        animationId = requestAnimation(dumpValue);
+        return;
       }
 
-      const springForce = -1 * stiffness * (currentValues[key] - desiredValues[key]);
-      const damperForce = -1 * damping * currentVelocities[key];
-      const acceleration = (springForce + damperForce) / mass;
-
-      currentVelocities[key] += acceleration / props.framesPerSecond;
-      currentValues[key] += currentVelocities[key] / props.framesPerSecond;
-      output[key] = roundNumber(currentValues[key]);
-      cancelAnimation(animations[key]);
-      animations[key] = requestAnimation(() => dumpValue(key));
+      // If dumped start animation in reverse direction
+      if (props.direction === 'pendulum') {
+        switchValueDirection();
+      }
     }
 
-    function isDumped(key: string) {
-      const velocity = Math.abs(currentVelocities[key]);
-      const delta = Math.abs(currentValues[key] - desiredValues[key]);
+    function isDumped() {
+      const velocity = Math.abs(currentData.velocity);
+      const delta = Math.abs(currentData.value - currentData.desired);
       return velocity < dumpingPrecision && delta < dumpingPrecision;
     }
 
@@ -123,19 +107,19 @@ export default {
       return Math.round(value * roundingPrecision) / roundingPrecision;
     }
 
-    function getDesiredValue(key: string, direction: string): number {
-      return (direction === 'reverse' ? props.from[key] : props.to[key]) || 0;
+    function initDesiredValue(): number {
+      return (props.direction === 'reverse' ? props.from : props.to) || 0;
     }
 
-    function getCurrentValue(key: string, direction: string): number {
-      return (direction === 'reverse' ? props.to[key] : props.from[key]) || 0;
+    function initCurrentValue(): number {
+      return (props.direction === 'reverse' ? props.to : props.from) || 0;
     }
 
-    function switchValueDirection(key: string): void {
-      const valuesArray = [props.from[key], props.to[key]];
-      desiredValues[key] = getFarestValue(valuesArray, currentValues[key]);
+    function switchValueDirection(): void {
+      const valuesArray = [props.from, props.to];
+      currentData.desired = getFarestValue(valuesArray, currentData.value);
     }
 
-    return () => slots?.default(output);
+    return () => slots?.default(output.value);
   },
 };
