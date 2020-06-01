@@ -1,4 +1,5 @@
-import Spring from './components/Spring';
-import Springs from './components/Springs';
+import spring from './spring';
+import SpringProvider from './components/SpringProvider';
+import SpringsProvider from './components/SpringsProvider';
 
-export { Spring, Springs };
+export { SpringProvider, SpringsProvider, spring };

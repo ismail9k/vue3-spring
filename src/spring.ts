@@ -1,0 +1,72 @@
+import { reactive, computed } from 'vue';
+
+import { getFarestValue, requestAnimation, cancelAnimation } from './lib/utils';
+
+import { springSettings } from './lib/settings';
+
+export default function spring(initValue: number = 0, settings: any) {
+  const props = { ...springSettings, ...settings };
+
+  const state: any = reactive({
+    currentValue: initValue,
+    desiredValue: initValue,
+    velocity: props.velocity,
+  });
+
+  // Non reactive values
+  let animationId: number = 0;
+  // Use for pendulum spring
+  let lastDesiredValue: number = initValue;
+  const roundingPrecision = Math.pow(10, props.precision);
+  const dumpingPrecision = 1 / roundingPrecision;
+
+  const output: any = computed({
+    get: () => roundNumber(state.currentValue),
+    set: (val) => {
+      if (typeof val !== 'number') return;
+      state.desiredValue = lastDesiredValue = val;
+      animationId = requestAnimation(dumpValue);
+    },
+  });
+
+  function dumpValue() {
+    const { stiffness, damping, mass } = props;
+
+    // check if value is already dumped
+    if (isDumped()) {
+      // If dumped start animation in reverse direction
+      if (props.isPendulum) {
+        switchValueDirection();
+      } else {
+        return;
+      }
+    }
+
+    const springForce = -1 * stiffness * (state.currentValue - state.desiredValue);
+    const damperForce = -1 * damping * state.velocity;
+    const acceleration = (springForce + damperForce) / mass;
+
+    state.velocity += acceleration / props.framesPerSecond;
+    state.currentValue += state.velocity / props.framesPerSecond;
+    cancelAnimation(animationId);
+    animationId = requestAnimation(dumpValue);
+  }
+
+  function isDumped() {
+    const velocity = Math.abs(state.velocity);
+    const delta = Math.abs(state.currentValue - state.desiredValue);
+    return velocity < dumpingPrecision && delta < dumpingPrecision;
+  }
+
+  function roundNumber(value: number) {
+    return Math.round(value * roundingPrecision) / roundingPrecision;
+  }
+
+  function switchValueDirection(): void {
+    const valuesArray = [initValue, lastDesiredValue];
+    console.log('valuesArray', valuesArray);
+    state.desiredValue = getFarestValue(valuesArray, state.currentValue);
+  }
+
+  return output;
+}
