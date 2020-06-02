@@ -24,3 +24,11 @@ export function requestAnimation(fun: FrameRequestCallback) {
 export function cancelAnimation(id: number) {
   return window.cancelAnimationFrame(id);
 }
+
+/**
+ * requestAnimationFrame
+ * @param fun
+ */
+export function isNumber(value: unknown): value is number {
+  return typeof value === 'number';
+}

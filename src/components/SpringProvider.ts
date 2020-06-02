@@ -1,61 +1,51 @@
-import spring from '../spring';
+import spring from './spring';
+
+import { isNumber } from '../lib/utils';
+import { watchEffect, reactive } from 'vue';
 
 import { SpringProps } from '../types';
-
-import { springSettings } from '../lib/settings';
-import { watchEffect } from 'vue';
 
 export default {
   name: 'SpringProvider',
   props: {
     from: {
-      default: 0,
-      type: Number,
+      default: () => ({}),
+      type: [Object, Number],
     },
     to: {
-      default: 0,
+      default: () => ({}),
       required: true,
-      type: Number,
+      type: [Object, Number],
     },
     // spring stiffness, in kg / s^2
-    stiffness: {
-      default: springSettings.stiffness,
-      type: Number,
-    },
+    stiffness: Number,
     // damping constant, in kg / s
-    damping: {
-      default: springSettings.damping,
-      type: Number,
-    },
+    damping: Number,
     // spring mass
-    mass: {
-      default: springSettings.mass,
-      type: Number,
-    },
+    mass: Number,
     // initial velocity
-    velocity: {
-      default: springSettings.velocity,
-      type: Number,
-    },
+    velocity: Number,
     // number of digits to round the values
-    precision: {
-      default: springSettings.precision,
-      type: Number,
-    },
+    precision: Number,
     // display refresh rate
-    framesPerSecond: {
-      default: springSettings.framesPerSecond,
-      type: Number,
-    },
+    framesPerSecond: Number,
     // is animation repeated
-    isPendulum: {
-      default: springSettings.isPendulum,
-      type: Boolean,
-    },
+    isPendulum: Boolean,
   },
   setup(props: SpringProps, { slots }: any) {
-    const output = spring(props.from, props);
-    watchEffect(() => (output.value = props.to));
+    const output = spring(props);
+
+    // if there is only one value
+    if (isNumber(props.to)) {
+      watchEffect(() => (output.value = props.to));
+      return () => slots?.default(output);
+    }
+
+    // if the sprint has more than one variable
+    const values = Object.keys(props.to);
+    watchEffect(() => {
+      values.forEach((key) => (output[key] = props.to[key]));
+    });
     return () => slots?.default(output);
   },
 };

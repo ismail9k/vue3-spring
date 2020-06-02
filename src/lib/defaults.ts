@@ -1,4 +1,10 @@
-export const springSettings: any = {
+import { SpringProps } from '../types';
+
+export const springDefaults: SpringProps = {
+  // init value
+  from: 0,
+  // desired value
+  to: 0,
   // spring stiffness, in kg / s^2
   stiffness: 170,
   // damping constant, in kg / s

@@ -1,22 +1,22 @@
 import { reactive, computed } from 'vue';
 
-import { getFarestValue, requestAnimation, cancelAnimation } from './lib/utils';
+import { getFarestValue, requestAnimation, cancelAnimation } from './utils';
 
-import { springSettings } from './lib/settings';
+import { springDefaults } from './defaults';
 
-export default function spring(initValue: number = 0, settings: any) {
-  const props = { ...springSettings, ...settings };
+export default function springCore(settings: any) {
+  const props = { ...springDefaults, ...settings };
 
   const state: any = reactive({
-    currentValue: initValue,
-    desiredValue: initValue,
+    currentValue: props.from,
+    desiredValue: props.to,
     velocity: props.velocity,
   });
 
   // Non reactive values
   let animationId: number = 0;
   // Use for pendulum spring
-  let lastDesiredValue: number = initValue;
+  let lastDesiredValue: number = props.to;
   const roundingPrecision = Math.pow(10, props.precision);
   const dumpingPrecision = 1 / roundingPrecision;
 
@@ -28,6 +28,11 @@ export default function spring(initValue: number = 0, settings: any) {
       animationId = requestAnimation(dumpValue);
     },
   });
+
+  // start action
+  if (state.currentValue !== state.desiredValue) {
+    animationId = requestAnimation(dumpValue);
+  }
 
   function dumpValue() {
     const { stiffness, damping, mass } = props;
@@ -63,8 +68,7 @@ export default function spring(initValue: number = 0, settings: any) {
   }
 
   function switchValueDirection(): void {
-    const valuesArray = [initValue, lastDesiredValue];
-    console.log('valuesArray', valuesArray);
+    const valuesArray = [props.from, lastDesiredValue];
     state.desiredValue = getFarestValue(valuesArray, state.currentValue);
   }
 
