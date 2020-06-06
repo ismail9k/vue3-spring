@@ -3,33 +3,33 @@ import springCore from '../lib/core';
 import { isNumber, isObject } from '../lib/utils';
 import { reactive, watchEffect, isReactive, isRef } from 'vue';
 
-import { SpringProps } from '../types';
+import { SpringProps, SpringData } from '../types';
 
-export default function spring(props: SpringProps) {
-  const springConfig = { ...props };
+export default function spring(desiredValue: SpringData, props: SpringProps) {
+  const springConfig = { to: desiredValue, ...props };
   let output: any;
 
   // if there is only one value
-  if (!props || isNumber(props.to)) {
+  if (!desiredValue || isNumber(desiredValue)) {
     springConfig.from = isNumber(springConfig.from) ? springConfig.from : 0;
     output = springCore(springConfig);
   }
   // if the passed value is ref
-  else if (isRef(props.to)) {
-    springConfig.to = props.to.value;
+  else if (isRef(desiredValue)) {
+    springConfig.to = desiredValue.value;
     springConfig.from = isNumber(springConfig.from) ? springConfig.from : 0;
 
     output = springCore(springConfig);
   }
   // if the sprint has more than one variable
-  else if (isObject(props.to)) {
-    const keys = Object.keys(props.to);
+  else if (isObject(desiredValue)) {
+    const keys = Object.keys(desiredValue);
     if (!keys.length) {
       throw new Error('[spring] can not find any values');
     }
 
     const springs = keys.reduce((obj: any, key) => {
-      springConfig.to = props.to[key];
+      springConfig.to = desiredValue[key];
       springConfig.from = props?.from?.[key] || 0;
 
       obj[key] = springCore(springConfig);
@@ -40,14 +40,14 @@ export default function spring(props: SpringProps) {
   }
 
   // watch reactive variables changes
-  if (isReactive(props.to)) {
+  if (isReactive(desiredValue)) {
     watchEffect(() => {
-      Object.entries(props.to).forEach(([key, value]) => {
+      Object.entries(desiredValue).forEach(([key, value]) => {
         output[key] = value;
       });
     });
-  } else if (isRef(props.to)) {
-    watchEffect(() => (output.value = props.to.value));
+  } else if (isRef(desiredValue)) {
+    watchEffect(() => (output.value = desiredValue.value));
   }
 
   return output;

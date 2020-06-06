@@ -33,7 +33,7 @@ export default {
     isPendulum: Boolean,
   },
   setup(props: SpringProps, { slots }: any) {
-    const output = spring(props);
+    const output = spring(props.to, props);
 
     // if there is only one value
     if (isNumber(props.to)) {

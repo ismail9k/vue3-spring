@@ -12,7 +12,7 @@ export default {
   setup() {
     const positionX = ref(100);
 
-    const circlePosition = spring({ to: positionX });
+    const circlePosition = spring(positionX);
 
     return {
       circlePosition,

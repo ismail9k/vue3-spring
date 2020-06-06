@@ -14,7 +14,7 @@
 </template>
 
 <script>
-import { reactive, onMounted, watchEffect } from 'vue';
+import { reactive, onMounted } from 'vue';
 import { spring } from 'vue3-spring';
 
 export default {
@@ -22,15 +22,13 @@ export default {
   setup() {
     const mouse = reactive({ x: 0, y: 0 });
 
-    const circle1 = spring({ to: mouse });
-    const circle2 = spring({
-      to: mouse,
+    const circle1 = spring(mouse);
+    const circle2 = spring(mouse, {
       damping: 10,
       stiffness: 120,
       mass: 2,
     });
-    const circle3 = spring({
-      to: mouse,
+    const circle3 = spring(mouse, {
       damping: 3,
       stiffness: 170,
       mass: 2,
