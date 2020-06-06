@@ -1,12 +1,16 @@
 # Vue 3 Spring
 
 A spring-physics based animation library, in addition to more components, to cover most of the UI related animations, when CSS is not enough for you.
-It shipped with Composition-API-friendly functions to support model-based API, in additional to Components for the ones who prefer the template-based way
+It shipped with Composition-API-friendly [animation functions](#animation-functions) to support model-based API, in additional to [animation components](#animation-components) for the ones who prefer the template-based way
 This library represents the Vue3 alternative for [react-spring](https://www.react-spring.io/) and [react-motion](https://github.com/chenglou/react-motion).
 
-## Available Functions
+## Animation Functions
 
 Composition-API-friendly functions to support model-based API
+
+- [`Spring`](#spring)
+- [`Parallax`](#parallax)
+- [`Present`](#present)
 
 ### Spring
 
@@ -14,7 +18,7 @@ The primary animation component, which is a spring-physics based. Its main role 
 
 #### Using
 
-`spring` function task `SpringValue` as its first argument, and `SpringProps` optional as the second argument.
+`spring` function task [`SpringValue`](#spring-value) as its first argument, and [`SpringProps`](#spring-props) optional as the second argument.
 
 ##### Single Value
 
@@ -124,6 +128,68 @@ Used to apply CSS animation class to an element, when it enters the view-port.
 
 #### COMING SOON
 
-## Available Components
+## Animation Components
 
 Components for the ones who prefer the template-based way
+
+- [`SpringProvider`](#springprovider)
+- [`ParallaxProvider`](#parallaxprovider)
+- [`PresentProvider`](#presentprovider)
+
+### SpringProvider
+
+`SpringProvider` accepts [props](#spring-props) same the [`spring`](#spring) function
+
+#### Using
+
+##### Single Value
+
+```vue
+<template>
+  <spring-provider v-slot="{ value }" :to="positionX" :damping="10">
+    <div class="circle" :style="{ transform: `translateX(${value}px)` }"></div>
+  </spring-provider>
+</template>
+
+<script>
+import { SpringProvider } from 'vue3-spring';
+
+export default {
+  name: 'App',
+  components: { SpringProvider },
+  data: () => ({
+    positionX: 100,
+  }),
+};
+</script>
+```
+
+##### Multiple Values
+
+```vue
+<template>
+  <spring-provider v-slot="{ x, y }" :to="mouse" :damping="10">
+    <div class="circle" :style="{ transform: `translate(${x}px, ${y}px)` }"></div>
+  </spring-provider>
+</template>
+
+<script>
+import { SpringProvider } from 'vue3-spring';
+
+export default {
+  name: 'App',
+  components: { SpringProvider },
+  data: () => ({
+    mouse: { x: 0, y: 0 },
+  }),
+};
+</script>
+```
+
+### ParallaxProvider
+
+#### COMING SOON
+
+### PresentProvider
+
+#### COMING SOON
