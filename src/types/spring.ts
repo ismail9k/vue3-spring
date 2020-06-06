@@ -1,9 +1,9 @@
-export interface SpringData {
+export interface SpringValue {
   [key: string]: number;
 }
 export interface SpringProps {
-  to?: any | number | SpringData;
-  from?: any | number | SpringData;
+  to?: any | number | SpringValue;
+  from?: any | number | SpringValue;
   stiffness?: number;
   damping?: number;
   mass?: number;
