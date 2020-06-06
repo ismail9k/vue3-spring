@@ -35,17 +35,11 @@ export default {
   setup(props: SpringProps, { slots }: any) {
     const output = spring(props.to, props);
 
-    // if there is only one value
+    // if there is only one value should watch effects
     if (isNumber(props.to)) {
       watchEffect(() => (output.value = props.to));
-      return () => slots?.default(output);
     }
 
-    // if the sprint has more than one variable
-    const values = Object.keys(props.to);
-    watchEffect(() => {
-      values.forEach((key) => (output[key] = props.to[key]));
-    });
     return () => slots?.default(output);
   },
 };
