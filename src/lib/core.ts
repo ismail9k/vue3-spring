@@ -1,6 +1,6 @@
 import { reactive, computed } from 'vue';
 
-import { getFarestValue, requestAnimation, cancelAnimation } from './utils';
+import { getFarestValue, requestAnimation, cancelAnimation, debounce } from './utils';
 
 import { springDefaults } from './defaults';
 
@@ -24,8 +24,10 @@ export default function springCore(settings: any) {
     get: () => roundNumber(state.currentValue),
     set: (val) => {
       if (typeof val !== 'number') return;
-      state.desiredValue = lastDesiredValue = val;
-      animationId = requestAnimation(dumpValue);
+      debounce(() => {
+        state.desiredValue = lastDesiredValue = val;
+        animationId = requestAnimation(dumpValue);
+      }, props.updateDebounce)();
     },
   });
 

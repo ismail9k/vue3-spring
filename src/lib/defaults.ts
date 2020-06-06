@@ -20,4 +20,6 @@ export const springDefaults: SpringProps = {
   framesPerSecond: 60,
   // is animation repeated
   isPendulum: false,
+  // updating function debounce
+  updateDebounce: 300,
 };
