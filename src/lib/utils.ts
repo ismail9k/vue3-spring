@@ -33,13 +33,10 @@ export function isNumber(value: unknown): value is number {
   return typeof value === 'number';
 }
 
-export const debounce = (func: Function, delay: number) => {
-  let inDebounce: number;
-  return function () {
-    // @ts-ignore
-    const context = this;
-    const args = arguments;
-    clearTimeout(inDebounce);
-    inDebounce = setTimeout(() => func.apply(context, args), delay);
-  };
-};
+/**
+ * requestAnimationFrame
+ * @param fun
+ */
+export function isObject(value: unknown): value is object {
+  return typeof value === 'object';
+}
