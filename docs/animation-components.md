@@ -3,19 +3,9 @@
 
 Components for the ones who prefer the template-based way
 
-- [Animation Components](#animation-components)
-  - [SpringProvider](#springprovider)
-    - [Using](#using)
-      - [Single Value](#single-value)
-      - [Multiple Values](#multiple-values)
-  - [ParallaxProvider](#parallaxprovider)
-    - [COMING SOON](#coming-soon)
-  - [PresentProvider](#presentprovider)
-    - [COMING SOON](#coming-soon-1)
-
 ## SpringProvider
 
-`SpringProvider` accepts [props](#spring-props) same the [`spring`](#spring) function
+`SpringProvider` accepts [props](/vue3-spring/animation-functions#spring-props) same the [`spring`](/vue3-spring/animation-functions#spring) function
 
 ### Using
 
