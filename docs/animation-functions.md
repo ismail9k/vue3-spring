@@ -10,6 +10,8 @@ Composition-API-friendly functions to support model-based API
 
 The primary animation component, which is a spring-physics based. Its main role is to move property from one value to another, with more natural animation and easing.
 
+<spring-example />
+
 ### Using
 
 `spring` function task [`SpringValue`](#spring-value) as its first argument, and [`SpringProps`](#spring-props) optional as the second argument.
@@ -121,3 +123,14 @@ Used move property from one value to another, based on the scrolled distance.
 Used to apply CSS animation class to an element, when it enters the view-port.
 
 ### COMING SOON
+
+
+<script>
+import Spring from './components/examples/functions/Spring.vue';
+
+export default {
+  components: {
+    'spring-example': Spring,
+  }
+}
+</script>

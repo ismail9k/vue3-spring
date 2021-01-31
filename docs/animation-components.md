@@ -7,6 +7,8 @@ Components for the ones who prefer the template-based way
 
 `SpringProvider` accepts [props](/vue3-spring/animation-functions#spring-props) same the [`spring`](/vue3-spring/animation-functions#spring) function
 
+<spring-example />
+
 ### Using
 
 #### Single Value
@@ -60,3 +62,14 @@ export default {
 ## PresentProvider
 
 ### COMING SOON
+
+
+<script>
+import Spring from './components/examples/components/Spring.vue';
+
+export default {
+  components: {
+    'spring-example': Spring,
+  }
+}
+</script>
