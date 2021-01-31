@@ -1,0 +1,1 @@
+import{o as e,c as t,b as n}from"./app.38facd8e.js";const r='{"title":"Vue 3 Spring","description":"","frontmatter":{},"relativePath":"getting-started.md","lastUpdated":1610882406385}',a={},o=n('',2);a.render=function(n,r,a,i,s,p){return e(),t("div",null,[o])};export default a;export{r as __pageData};
